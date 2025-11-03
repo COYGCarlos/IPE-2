@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de Riesgos Laborales - Unidad 2 IPE</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos personalizados y fuente */
+        :root { 
+            --primary-color: #3b82f6; /* Blue 500 */
+            --primary-dark: #2563eb; /* Blue 600 */
+            --success-color: #10b981; /* Emerald 500 */
+            --error-color: #ef4444; /* Red 500 */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 1rem;
+        }
+        .option-button {
+            transition: all 0.2s;
+        }
+        /* Estilo para la opción correcta (éxito) */
+        .bg-success {
+            background-color: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+        /* Estilo para la opción incorrecta (error) */
+        .bg-error {
+            background-color: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen">
+
+    <div id="app-container" class="max-w-4xl mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Cuestionario: Riesgos Laborales</h1>
+            <p class="text-gray-500">Unidad 2 - IPE (20 Preguntas Seleccionadas al Azar de un total de 79)</p>
+        </header>
+
+        <!-- Contenedor Principal que será manipulado por JS -->
+        <div id="quiz-container" class="card bg-white p-6 sm:p-8">
+            <!-- La interfaz se renderizará aquí -->
+        </div>
+    </div>
+
+    <script>
+        // Array de preguntas y respuestas extraídas del PDF (Total: 79 preguntas)
+        const ALL_QUESTIONS = [
+            // Preguntas 1-25 (Iniciales)
+            { id: 1, q: "¿Cuál de estos NO es un factor de riesgo asociado al trabajo mencionado en el índice?", options: ["Entorno físico.", "Ejecución de la tarea.", "Factores económicos.", "Factores psicosociales."], answer: 2, explanation: "El índice del temario menciona los factores de riesgo asociados al entorno físico, la ejecución de la tarea y los factores psicosociales, no los factores económicos." },
+            { id: 2, q: "¿Cuál es un riesgo común que se materializa a partir de suelos deslizantes?", options: ["Quemaduras.", "Intoxicaciones.", "Caídas o resbalamientos.", "Aplastamiento por caída de estructuras."], answer: 2, explanation: "Los suelos deslizantes son un factor de riesgo físico que tiene como consecuencia más común las caídas, tropiezos o resbalamientos." },
+            { id: 3, q: "¿Qué requisito constructivo garantiza unos espacios e instalaciones seguros?", options: ["Muebles lujosos.", "Dimensiones suficientes y condiciones óptimas.", "Puertas automáticas.", "Pintura lavable."], answer: 1, explanation: "Los espacios de trabajo deben tener dimensiones suficientes y condiciones óptimas, además de estructuras y mobiliario adecuados." },
+            { id: 4, q: "Mantener un espacio de trabajo ordenado y limpio es una garantía de:", options: ["Ahorro de costes.", "Seguridad y eficiencia.", "Alta productividad inmediata.", "Decoración minimalista."], answer: 1, explanation: "Se afirma que mantener un espacio de trabajo ordenado y limpio es una garantía de seguridad y también de eficiencia." },
+            { id: 5, q: "El síndrome de Burnout se define como un estado de agotamiento:", options: ["Puramente físico.", "Emocional y mental, pero no físico.", "Físico, emocional y mental.", "Emocional temporal."], answer: 2, explanation: "El Burnout es un estado de agotamiento físico, emocional y mental." },
+            { id: 6, q: "¿Cuál de los siguientes es un componente del modelo tridimensional del Burnout?", options: ["Estrés laboral crónico.", "Realización personal reducida.", "Baja autoestima.", "Conflicto de roles."], answer: 1, explanation: "El modelo tridimensional del Burnout incluye Agotamiento Emocional, Despersonalización/Cinismo y Realización Personal Reducida." },
+            { id: 7, q: "¿Qué inventario se utiliza habitualmente para medir el Burnout?", options: ["Inventario de Estrés General (IEG).", "Maslach Burnout Inventory (MBI).", "Escala de Depresión de Beck (BDI).", "Cuestionario de Clima Laboral (CCL)."], answer: 1, explanation: "El Maslach Burnout Inventory (MBI) es el inventario más utilizado para la medición del Burnout." },
+            { id: 8, q: "Una de las medidas de prevención del Burnout que puede emprender la *persona* es:", options: ["Implementar programas de bienestar empresarial.", "Practicar el autocuidado.", "Reducir la jornada laboral global.", "Contratar más personal."], answer: 1, explanation: "Practicar el autocuidado es una medida de prevención que depende de la persona, a diferencia de las otras que dependen de la organización." },
+            { id: 9, q: "Aprender a delegar y aceptar que no se puede hacer todo es una medida de prevención del Burnout enfocada en:", options: ["La organización.", "Los mandos superiores.", "La persona.", "El equipo de trabajo."], answer: 2, explanation: "Estas son medidas que la propia persona debe emprender para prevenir el Burnout (Fijarse límites, delegar, etc.)." },
+            { id: 10, q: "El Mobbing o acoso laboral se dirige hacia una persona de manera:", options: ["Casual y esporádica.", "Repetida y sistemática.", "Única y puntual.", "Solo verbal."], answer: 1, explanation: "El acoso laboral consiste en un comportamiento abusivo dirigido de manera repetida y sistemática." },
+            { id: 11, q: "¿Cuál es una forma de manifestación de acoso laboral?", options: ["Reconocimiento justificado de méritos.", "Asignación de cargas de trabajo sobredimensionadas.", "Feedback constructivo.", "Horarios flexibles."], answer: 1, explanation: "La asignación de cargas de trabajo sobredimensionadas para generar presión es una de las manifestaciones de Mobbing." },
+            { id: 12, q: "Un comentario despectivo o una crítica injustificada se enmarca dentro de las manifestaciones de:", options: ["Conflicto de personalidad.", "Estrés puntual.", "Acoso laboral (Mobbing).", "Bajo rendimiento."], answer: 2, explanation: "Los insultos, burlas o críticas injustificadas son formas de manifestación del acoso laboral (Mobbing)." },
+            { id: 13, q: "El acoso por razón de género u orientación sexual es un ejemplo de:", options: ["Factor de riesgo físico.", "Modalidad específica de acoso laboral.", "Síntoma de Burnout.", "Deficiencia estructural."], answer: 1, explanation: "El acoso por razón de género u orientación sexual es una de las modalidades específicas de acoso en el entorno de trabajo." },
+            { id: 14, q: "Las deficiencias estructurales de edificios e instalaciones se clasifican como:", options: ["Riesgos psicosociales.", "Factores de riesgo del entorno físico.", "Riesgos ambientales.", "Riesgos de la tarea."], answer: 1, explanation: "Se listan como Factores de riesgo asociados al entorno físico del trabajo." },
+            { id: 15, q: "¿Qué riesgo puede materializarse por tener un sistema eléctrico defectuoso?", options: ["Resbalamientos.", "Quemaduras.", "Exclusión social.", "Carga de trabajo excesiva."], answer: 1, explanation: "Un sistema eléctrico defectuoso puede provocar quemaduras, electrocuciones o incendios." },
+            { id: 16, q: "La Despersonalización o Cinismo en el Burnout se refiere a:", options: ["Sentimientos de depresión.", "Actitudes negativas y distantes hacia el trabajo y los clientes.", "Falta de sueño.", "Exceso de horas extra."], answer: 1, explanation: "La Despersonalización o Cinismo es uno de los 3 componentes del Burnout, caracterizado por una respuesta fría y distante hacia los demás." },
+            { id: 17, q: "Comportamientos excluyentes, aislando o marginando a la víctima, son una forma de acoso laboral:", options: ["Manifiesto.", "Físico.", "Técnico.", "Ambiental."], answer: 0, explanation: "La exclusión y marginación son formas claras y manifiestas de Mobbing o acoso laboral." },
+            { id: 18, q: "Los requisitos constructivos de los espacios de trabajo deben incluir controles ante:", options: ["Fiestas de empresa.", "Situaciones de emergencias.", "Visitas de clientes.", "Auditorías financieras."], answer: 1, explanation: "Los espacios deben tener controles ante situaciones de emergencias (ej. incendios, evacuación)." },
+            { id: 19, q: "¿Cuál es la principal diferencia entre Mobbing y Burnout?", options: ["El Mobbing es intencional y el Burnout es una respuesta al estrés crónico.", "El Burnout solo afecta a la salud física.", "El Mobbing solo es verbal.", "No hay diferencia, son lo mismo."], answer: 0, explanation: "El Mobbing es un comportamiento abusivo dirigido, repetido y sistemático (intencional); el Burnout es un estado de agotamiento (respuesta al estrés crónico)." },
+            { id: 20, q: "¿Qué se recomienda para la prevención del Burnout en relación a la comunicación?", options: ["Evitar comunicarse.", "Comunicarse asertivamente.", "Enviar emails formales solamente.", "Usar solo lenguaje técnico."], answer: 1, explanation: "Comunicarse asertivamente con el equipo de trabajo y mandos superiores es una medida de prevención personal contra el Burnout." },
+            { id: 21, q: "La falta de señalización en el entorno físico del trabajo es un factor de riesgo que puede llevar a:", options: ["Desmotivación.", "Confusión en las tareas.", "Caídas o tropiezos.", "Conflictos interpersonales."], answer: 2, explanation: "La falta de señalización contribuye a los riesgos de caídas o tropiezos y otros accidentes físicos." },
+            { id: 22, q: "Actuaciones destinadas a perjudicar la reputación de la persona es un ejemplo de manifestación de:", options: ["Delegación de tareas.", "Burnout.", "Mobbing.", "Autocuidado."], answer: 2, explanation: "Perjudicar la reputación es una manifestación directa de acoso laboral (Mobbing)." },
+            { id: 23, q: "El Agotamiento Emocional en el Burnout se relaciona con:", options: ["Sentirse sobrecargado y agotado de recursos emocionales.", "Sentirse feliz en el trabajo.", "Tener un exceso de energía.", "Ser muy cínico."], answer: 0, explanation: "El Agotamiento Emocional es el sentimiento de estar exhausto y sin recursos emocionales para enfrentar el trabajo." },
+            { id: 24, q: "La maquinaria obsoleta es un factor de riesgo asociado al:", options: ["Entorno físico del trabajo.", "Ejecución de la tarea.", "Factor psicosocial.", "Mobbing."], answer: 0, explanation: "La maquinaria obsoleta se menciona en los Factores de riesgo asociados al entorno físico del trabajo." },
+            { id: 25, q: "Una medida clave para prevenir el Burnout por parte de la empresa u organización es:", options: ["Practicar la meditación.", "Fijarse límites saludables entre vida laboral y personal.", "Fomentar un ambiente profesional saludable.", "Comunicarse asertivamente con el equipo."], answer: 2, explanation: "Fomentar un ambiente profesional saludable es una medida que típicamente emprende la organización, mientras que las otras son responsabilidades individuales." },
+            
+            // Preguntas 26-79 (Adicionales y más detalladas)
+            { id: 26, q: "¿Qué tipo de riesgo se materializa por aplastamiento?", options: ["Riesgo psicosocial.", "Riesgo ambiental.", "Riesgo del entorno físico.", "Riesgo ergonómico."], answer: 2, explanation: "El aplastamiento por caída de muebles o estructuras es un riesgo común que se materializa a partir de factores de riesgo del entorno físico." },
+            { id: 27, q: "¿Qué factor de riesgo del entorno físico se asocia con electrocuciones o incendios?", options: ["Maquinaria obsoleta.", "Suelos deslizantes.", "Sistema eléctrico defectuoso.", "Falta de señalización."], answer: 2, explanation: "Un sistema eléctrico defectuoso puede provocar quemaduras, electrocuciones o incendios, según el documento." },
+            { id: 28, q: "¿Cuál de los siguientes NO es un riesgo común mencionado que se materializa por estos factores?", options: ["Caídas o tropiezos.", "Aplastamiento.", "Resbalamientos.", "Estrés crónico."], answer: 3, explanation: "El estrés crónico es un factor de riesgo psicosocial, no un riesgo físico que se materialice a partir de deficiencias estructurales o maquinaria obsoleta." },
+            { id: 29, q: "¿Cuál es el objetivo principal de la señalización en el entorno físico de trabajo?", options: ["Mejorar la estética.", "Prevenir desmotivación.", "Prevenir caídas o tropiezos.", "Aumentar la productividad."], answer: 2, explanation: "La falta de señalización se relaciona directamente con los riesgos de caídas o tropiezos." },
+            { id: 30, q: "Los espacios de trabajo deben tener dimensiones suficientes y...", options: ["Tecnología avanzada.", "Mobiliario ergonómico.", "Condiciones óptimas.", "Ventanas grandes."], answer: 2, explanation: "Los requisitos constructivos exigen 'dimensiones suficientes y condiciones óptimas'." },
+            { id: 31, q: "¿Qué doble garantía ofrece el mantenimiento del espacio ordenado y limpio?", options: ["Productividad y ambiente.", "Ahorro y eficiencia.", "Seguridad y eficiencia.", "Salud y bienestar."], answer: 2, explanation: "Se afirma que es una garantía de seguridad y también de eficiencia." },
+            { id: 32, q: "¿Qué riesgo se materializa a partir de deficiencias estructurales de edificios e instalaciones?", options: ["Mobbing.", "Intoxicaciones.", "Agotamiento emocional.", "Aplastamiento por caída de estructuras."], answer: 3, explanation: "Las deficiencias estructurales son un factor de riesgo del entorno físico que puede llevar al aplastamiento." },
+            { id: 33, q: "Según el texto, ¿qué deben tener los espacios de trabajo ante situaciones de emergencias?", options: ["Alarma de voz.", "Controles.", "Personal de seguridad.", "Puertas blindadas."], answer: 1, explanation: "Los espacios deben tener 'controles ante situaciones de emergencias'." },
+            { id: 34, q: "¿Cuál es el principal efecto de la Despersonalización o Cinismo en el Burnout?", options: ["Reconocimiento social.", "Respuesta fría y distante hacia el trabajo y los clientes.", "Mayor rendimiento.", "Mayor empatía."], answer: 1, explanation: "La Despersonalización se caracteriza por una respuesta fría y distante hacia los demás, incluido el trabajo y los clientes." },
+            { id: 35, q: "¿Qué componente del Burnout está relacionado con la sensación de falta de logro o competencia?", options: ["Agotamiento Emocional.", "Despersonalización.", "Estrés Físico.", "Realización Personal Reducida."], answer: 3, explanation: "La Realización Personal Reducida implica una disminución en la sensación de éxito y competencia profesional." },
+            { id: 36, q: "¿El Burnout se produce como respuesta a qué tipo de estrés?", options: ["Estrés puntual.", "Estrés laboral crónico.", "Estrés familiar.", "Estrés académico."], answer: 1, explanation: "El Burnout es la consecuencia del estrés laboral crónico." },
+            { id: 37, q: "Además del agotamiento físico y mental, ¿qué otro tipo de agotamiento define al Burnout?", options: ["Agotamiento social.", "Agotamiento emocional.", "Agotamiento cognitivo.", "Agotamiento financiero."], answer: 1, explanation: "El Burnout es un estado de agotamiento físico, emocional y mental." },
+            { id: 38, q: "¿Cuál es una medida de prevención del Burnout a nivel *personal* relacionada con la carga de trabajo?", options: ["Contratación de apoyo.", "Aprender a delegar.", "Reducción de objetivos.", "Mejora del salario."], answer: 1, explanation: "Aprender a delegar es una medida que la propia persona debe emprender." },
+            { id: 39, q: "Forjar buenas relaciones en el entorno laboral y fomentar un ambiente profesional saludable es una medida de prevención de:", options: ["La persona.", "La organización.", "Los mandos superiores.", "El equipo de trabajo."], answer: 1, explanation: "Aunque beneficia al equipo, es una medida que típicamente se fomenta desde la organización para prevenir el Burnout." },
+            { id: 40, q: "¿Qué debe hacer la persona si siente que el estrés está afectando su salud y bienestar?", options: ["Dimiti.", "Ignorarlo.", "Pedir ayuda dentro del entorno laboral y familiar.", "Trabajar más horas."], answer: 2, explanation: "Pedir ayuda es una medida de prevención personal cuando el estrés afecta la salud." },
+            { id: 41, q: "¿El Mobbing debe ser un comportamiento abusivo, hostil, intimidatorio o...?", options: ["Económico.", "Humillante.", "Respetuoso.", "Aislado."], answer: 1, explanation: "El Mobbing es un comportamiento abusivo, hostil, intimidatorio o humillante." },
+            { id: 42, q: "¿Qué característica temporal es indispensable para que un comportamiento se considere Mobbing?", options: ["Único y puntual.", "Casual y esporádico.", "Repetido y sistemático.", "Solo en días festivos."], answer: 2, explanation: "El Mobbing se dirige de 'manera repetida y sistemática'." },
+            { id: 43, q: "La exclusión y marginación de la víctima son ejemplos de manifestaciones de acoso que se caracterizan por:", options: ["Ser solo físicas.", "Ser solo verbales.", "Comportamientos excluyentes.", "Críticas constructivas."], answer: 2, explanation: "Se mencionan como 'Comportamientos excluyentes aislando o marginando a la víctima'." },
+            { id: 44, q: "Asignar una carga de trabajo sobredimensionada busca generar ¿qué en la víctima de Mobbing?", options: ["Ascensos.", "Reconocimiento.", "Presión.", "Mejor desempeño."], answer: 2, explanation: "El objetivo es 'generar presión'." },
+            { id: 45, q: "¿Cuál de las siguientes es una 'Modalidad específica de acoso' mencionada en el documento?", options: ["Acoso por bajo rendimiento.", "Acoso por razones políticas, religiosas o étnicas.", "Acoso temporal.", "Acoso por antigüedad."], answer: 1, explanation: "El documento lista el acoso por razones políticas, religiosas o étnicas como una modalidad específica." },
+            { id: 46, q: "¿Qué medida de prevención del Burnout busca lograr un equilibrio entre el trabajo y la vida privada?", options: ["Practicar el autocuidado.", "Fijarse límites saludables.", "Comunicarse asertivamente.", "Aprender a delegar."], answer: 1, explanation: "Fijarse unos límites saludables es sinónimo de separar la vida laboral y personal." },
+            { id: 47, q: "¿Qué tipo de riesgo está asociado a la Realización Personal Reducida?", options: ["Riesgo físico.", "Riesgo ambiental.", "Riesgo psicosocial.", "Riesgo químico."], answer: 2, explanation: "La Realización Personal Reducida es un componente del Burnout, que es un factor de riesgo psicosocial." },
+            { id: 48, q: "¿Qué debe aceptar una persona para prevenir el Burnout en relación a sus tareas?", options: ["Que debe hacer el doble.", "Que no se puede hacer todo.", "Que el trabajo es la prioridad.", "Que siempre necesita ayuda."], answer: 1, explanation: "La medida es 'Aceptar que no se puede hacer todo y aprender a delegar'." },
+            { id: 49, q: "¿Qué forma de manifestación de acoso laboral está destinada a perjudicar la imagen de la persona?", options: ["Críticas injustificadas.", "Amenazas verbales.", "Actuaciones para perjudicar la reputación.", "Asignación de tareas fáciles."], answer: 2, explanation: "Esta es una manifestación específica: 'Actuaciones destinadas a perjudicar la reputación de la persona'." },
+            { id: 50, q: "El Mobbing es cualquier forma de comportamiento ¿abusivo, hostil, o...?", options: ["Amistoso.", "Informativo.", "Intimidatorio.", "Colaborativo."], answer: 2, explanation: "La definición incluye: abusivo, hostil, intimidatorio o humillante." },
+            { id: 51, q: "¿La crítica *justificada* por sí sola se considera Mobbing?", options: ["Sí, siempre.", "No, solo las críticas injustificadas.", "Depende del tono.", "Solo si es por email."], answer: 1, explanation: "Solo los 'insultos, burlas, críticas *injustificadas* o comentarios despectivos' son manifestaciones de acoso." },
+            { id: 52, q: "¿Qué riesgo físico es consecuencia de la falta de orden y limpieza?", options: ["Estrés.", "Intoxicaciones.", "Resbalamientos y caídas.", "Cinismo."], answer: 2, explanation: "El desorden incrementa el riesgo de resbalamientos y caídas." },
+            { id: 53, q: "¿El acoso sexual es clasificado en el documento como?", options: ["Un conflicto laboral.", "Una modalidad específica de acoso.", "Una manifestación del Burnout.", "Un riesgo del entorno físico."], answer: 1, explanation: "Se lista como una 'Modalidad específica de acoso en el entorno de trabajo'." },
+            { id: 54, q: "¿Cuál de estos factores de riesgo corresponde a la categoría de Entorno Físico?", options: ["Conflicto de roles.", "Falta de señalización.", "Sobrecarga de trabajo.", "Acoso por género."], answer: 1, explanation: "La falta de señalización es un factor de riesgo asociado al entorno físico." },
+            { id: 55, q: "¿Qué riesgo físico se produce por la inhalación de sustancias nocivas?", options: ["Quemaduras.", "Intoxicaciones.", "Aplastamiento.", "Resbalamientos."], answer: 1, explanation: "La intoxicación se produce por la exposición a sustancias tóxicas o gases." },
+            { id: 56, q: "La Despersonalización se mide como parte del modelo tridimensional del Burnout junto con el Agotamiento Emocional y:", options: ["Agotamiento Físico.", "Baja Autoestima.", "Realización Personal Reducida.", "Aislamiento Social."], answer: 2, explanation: "Los tres componentes son: Agotamiento Emocional, Despersonalización/Cinismo y Realización Personal Reducida." },
+            { id: 57, q: "¿El Mobbing debe ser un comportamiento abusivo dirigido de manera...?", options: ["Repetida y puntual.", "Puntual y sistemática.", "Repetida y sistemática.", "Repetida y ocasional."], answer: 2, explanation: "La clave es que sea 'repetida y sistemática'." },
+            { id: 58, q: "¿Cuál es el propósito de forjar buenas relaciones en el entorno laboral?", options: ["Aumentar el salario.", "Fomentar un ambiente profesional saludable.", "Reducir la jornada.", "Aprender a delegar."], answer: 1, explanation: "El texto lo menciona como una acción para 'fomentar un ambiente profesional saludable' y prevenir el Burnout." },
+            { id: 59, q: "¿Qué requisito constructivo se relaciona con la solidez de mesas y armarios?", options: ["Dimensiones suficientes.", "Condiciones óptimas.", "Estructuras y mobiliario adecuado.", "Controles de emergencia."], answer: 2, explanation: "La solidez del mobiliario se incluye en 'Estructuras y mobiliario adecuado'." },
+            { id: 60, q: "El factor de riesgo 'Maquinaria obsoleta' pertenece a:", options: ["Factores psicosociales.", "Entorno físico.", "Ejecución de la tarea.", "Factores económicos."], answer: 1, explanation: "La maquinaria obsoleta se lista bajo los Factores de riesgo asociados al entorno físico del trabajo." },
+            { id: 61, q: "¿Las amenazas verbales o gestos intimidatorios son una manifestación de?", options: ["Burnout.", "Agotamiento emocional.", "Mobbing.", "Estrés positivo."], answer: 2, explanation: "Las amenazas verbales o gestos intimidatorios son formas directas de manifestación de Mobbing." },
+            { id: 62, q: "Para prevenir el Burnout, ¿con quién se recomienda 'comunicarse asertivamente'?", options: ["Solo con el jefe.", "Solo con la familia.", "Con el equipo de trabajo y los mandos superiores.", "Solo con Recursos Humanos."], answer: 2, explanation: "Se recomienda 'Comunicarse asertivamente con el equipo de trabajo y con los mandos superiores'." },
+            { id: 63, q: "¿El 'acoso por razones políticas, religiosas o étnicas' es una forma de Mobbing?", options: ["No, es un conflicto personal.", "Sí, una modalidad específica.", "Solo si incluye amenazas físicas.", "Solo si es en horario laboral."], answer: 1, explanation: "El documento lo lista como una modalidad específica de acoso." },
+            { id: 64, q: "La falta de 'Estructuras y mobiliario adecuado' puede provocar el riesgo de:", options: ["Intoxicación.", "Quemaduras.", "Aplastamiento por caída de muebles o estructuras.", "Acoso laboral."], answer: 2, explanation: "Es un riesgo directo de las deficiencias estructurales." },
+            { id: 65, q: "¿Qué tipo de riesgo está implícito en el concepto de 'Intimidatorio' en la definición de Mobbing?", options: ["Físico.", "Estructural.", "Psicosocial.", "Ambiental."], answer: 2, explanation: "La intimidación es un riesgo que afecta la salud mental y emocional, es decir, psicosocial." },
+            { id: 66, q: "¿Qué se busca garantizar con unos espacios que tengan 'condiciones óptimas'?", options: ["La limpieza.", "La iluminación, ventilación y temperatura adecuada.", "El mobiliario lujoso.", "La ausencia de personas."], answer: 1, explanation: "Las condiciones óptimas se refieren a las condiciones ambientales básicas (iluminación, ventilación, etc.) que complementan las dimensiones suficientes." },
+            { id: 67, q: "El Maslach Burnout Inventory (MBI) mide tres dimensiones, ¿cuál NO es una de ellas?", options: ["Agotamiento Emocional.", "Despersonalización.", "Estrés General.", "Realización Personal Reducida."], answer: 2, explanation: "El MBI no mide el Estrés General; se enfoca en las tres dimensiones del Burnout." },
+            { id: 68, q: "Si la propia persona se siente sobrecargada y con el estrés afectando su salud, ¿qué acción personal se recomienda?", options: ["Implementar un protocolo de Mobbing.", "Pedir ayuda dentro del entorno laboral y familiar.", "Asignar más trabajo.", "Reducir la nómina."], answer: 1, explanation: "Una de las medidas de prevención personal es 'Pedir ayuda'." },
+            { id: 69, q: "¿Qué tipo de factor de riesgo engloba el Burnout y el Mobbing?", options: ["Factores de riesgo ambientales.", "Factores de riesgo psicosociales.", "Factores de riesgo de la tarea.", "Factores de riesgo físicos."], answer: 1, explanation: "Ambos síndromes son ejemplos de Factores de riesgo psicosociales." },
+            { id: 70, q: "¿Cuál es la diferencia de enfoque entre el Burnout (respuesta al estrés) y el Mobbing (comportamiento dirigido)?", options: ["El tipo de mobiliario.", "La intencionalidad del daño.", "La temperatura ambiente.", "La antigüedad del trabajador."], answer: 1, explanation: "El Mobbing implica un comportamiento abusivo *dirigido* (intencional), mientras que el Burnout es una respuesta al estrés crónico (no intencional)." },
+            { id: 71, q: "Si una persona experimenta sentimientos de estar exhausto y sin recursos emocionales, ¿qué componente del Burnout está manifestando?", options: ["Cinismo.", "Realización Personal Reducida.", "Agotamiento Emocional.", "Mobbing."], answer: 2, explanation: "El Agotamiento Emocional se define como el sentimiento de estar sobrecargado y agotado de recursos emocionales." },
+            { id: 72, q: "¿Cuál es el riesgo directo de tener suelos deslizantes?", options: ["Aplastamiento.", "Resbalamientos.", "Quemaduras.", "Intoxicaciones."], answer: 1, explanation: "Los suelos deslizantes provocan resbalamientos o caídas." },
+            { id: 73, q: "La medida de prevención 'Practicar el autocuidado' se enfoca en el bienestar:", options: ["Organizacional.", "Colectivo.", "Personal.", "Productivo."], answer: 2, explanation: "El autocuidado es una responsabilidad y una medida de prevención individual de la 'propia persona'." },
+            { id: 74, q: "¿Qué es lo que se recomienda 'fomentar' en la organización para prevenir el Burnout?", options: ["La competencia agresiva.", "El ambiente profesional saludable.", "Las críticas injustificadas.", "El trabajo en solitario."], answer: 1, explanation: "Se recomienda 'fomentar un ambiente profesional saludable'." },
+            { id: 75, q: "El requisito de que los espacios sean seguros con 'estructuras y mobiliario adecuado' previene qué tipo de riesgo?", options: ["Psicosocial.", "De ejecución de la tarea.", "Físico.", "Ambiental."], answer: 2, explanation: "El mobiliario adecuado y las estructuras son esenciales para prevenir riesgos físicos como el aplastamiento." },
+            { id: 76, q: "¿Cuál de las siguientes manifestaciones de Mobbing es típicamente NO verbal?", options: ["Insultos.", "Críticas injustificadas.", "Gestos intimidatorios.", "Comentarios despectivos."], answer: 2, explanation: "Los 'Gestos intimidatorios' son ejemplos de manifestaciones no verbales, a diferencia de las otras que son verbales." },
+            { id: 77, q: "Si la nota final del test es de 4.95/10, ¿se considera una nota de aprobado según el umbral común?", options: ["Sí, es un aprobado justo.", "No, la nota de aprobado es 5.", "Solo en modo Estudiar.", "Depende del número de preguntas."], answer: 1, explanation: "El aprobado estándar es de 5/10." },
+            { id: 78, q: "¿Qué tipo de comportamiento debe ser 'abusivo, hostil, intimidatorio o humillante' para ser considerado acoso laboral?", options: ["Comportamiento puntual.", "Comportamiento del jefe.", "Comportamiento dirigido de manera repetida y sistemática.", "Comportamiento del empleado."], answer: 2, explanation: "El Mobbing es un comportamiento abusivo, hostil, intimidatorio o humillante dirigido de manera repetida y sistemática." },
+            { id: 79, q: "¿Qué acción de prevención de Burnout a nivel personal ayuda a evitar la acumulación de responsabilidades excesivas?", options: ["Fomentar buenas relaciones.", "Aprender a delegar.", "Practicar autocuidado.", "Pedir ayuda."], answer: 1, explanation: "Aprender a delegar permite distribuir la carga de trabajo y evitar la sobrecarga." },
+        ];
+
+        // Objeto principal de la aplicación para gestionar el estado y la lógica
+        const App = {
+            mode: null, // "estudiar" o "practicar"
+            quiz: [], // 20 preguntas seleccionadas
+            userAnswers: [], // Respuestas del usuario: { qId: number, answerIndex: number, correct: boolean }
+            currentQuestionIndex: 0,
+            isQuizFinished: false,
+            quizContainer: document.getElementById('quiz-container'),
+
+            /**
+             * Inicializa el quiz seleccionando 20 preguntas al azar.
+             */
+            initQuiz() {
+                this.userAnswers = [];
+                this.currentQuestionIndex = 0;
+                this.isQuizFinished = false;
+
+                // 1. Clonar el array para no modificar el original
+                const shuffledQuestions = [...ALL_QUESTIONS];
+                // 2. Mezclar el array (Algoritmo de Fisher-Yates)
+                for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+                }
+                // 3. Seleccionar las primeras 20 preguntas
+                // Asegurar que haya al menos 20 preguntas o usar todas si hay menos.
+                this.quiz = shuffledQuestions.slice(0, Math.min(20, shuffledQuestions.length));
+                
+                this.render();
+            },
+
+            /**
+             * Renderiza la vista principal (selección de modo o quiz).
+             */
+            render() {
+                if (!this.mode) {
+                    this.renderModeSelection();
+                } else if (this.isQuizFinished) {
+                    this.renderResults();
+                } else {
+                    this.renderQuestion();
+                }
+            },
+
+            /**
+             * Muestra la pantalla de selección de modo.
+             */
+            renderModeSelection() {
+                this.quizContainer.innerHTML = `
+                    <div class="text-center p-4 sm:p-10">
+                        <h2 class="text-2xl font-semibold mb-6 text-gray-700">Selecciona un Modo de Juego</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <button onclick="App.setMode('estudiar')" 
+                                class="mode-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                                <span class="text-xl">Modo ESTUDIAR</span>
+                                <p class="text-sm mt-1 opacity-90">Corrección y explicación al instante.</p>
+                            </button>
+                            
+                            <button onclick="App.setMode('practicar')" 
+                                class="mode-button bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-xl transition duration-300 transform hover:scale-105 shadow-lg">
+                                <span class="text-xl">Modo PRACTICAR</span>
+                                <p class="text-sm mt-1 opacity-90">Sin corrección inmediata. Resultado final con nota.</p>
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-6">Hay ${ALL_QUESTIONS.length} preguntas disponibles en el banco de datos.</p>
+                    </div>
+                `;
+            },
+
+            /**
+             * Establece el modo y comienza el quiz.
+             * @param {string} mode - 'estudiar' o 'practicar'
+             */
+            setMode(mode) {
+                this.mode = mode;
+                this.initQuiz();
+            },
+
+            /**
+             * Muestra la pregunta actual.
+             */
+            renderQuestion() {
+                const q = this.quiz[this.currentQuestionIndex];
+                const qNumber = this.currentQuestionIndex + 1;
+                const totalQ = this.quiz.length;
+                const answered = this.userAnswers.find(a => a.qId === q.id);
+
+                let optionsHtml = '';
+                q.options.forEach((option, index) => {
+                    let classes = 'option-button w-full text-left py-3 px-4 rounded-lg border border-gray-300 mb-3 hover:bg-gray-100 transition duration-150 ';
+                    let onClick = `App.handleAnswer(${index})`;
+                    let disabled = '';
+
+                    if (answered) {
+                        disabled = 'disabled';
+                        onClick = 'void(0)'; // Deshabilita el click si ya se respondió
+
+                        if (index === q.answer) {
+                            // Opción correcta
+                            classes += ' bg-success border-success text-white font-semibold ';
+                        } else if (index === answered.answerIndex) {
+                            // Opción incorrecta seleccionada por el usuario
+                            classes += ' bg-error border-error text-white font-semibold ';
+                        } else {
+                            // Opciones no seleccionadas
+                            classes += ' bg-gray-50 text-gray-400 opacity-70 ';
+                        }
+                    } else {
+                        classes += ' bg-white text-gray-800 font-medium ';
+                    }
+
+                    optionsHtml += `
+                        <button ${disabled} onclick="${onClick}" class="${classes}">
+                            <span class="font-bold mr-2">${String.fromCharCode(65 + index)}:</span> ${option}
+                        </button>
+                    `;
+                });
+
+                let correctionHtml = '';
+                if (answered && !answered.correct && answered.answerIndex !== -1) {
+                    correctionHtml += `
+                        <div class="mt-4 p-4 bg-red-100 border-l-4 border-error rounded-lg shadow-inner">
+                            <p class="font-bold text-red-700">¡Incorrecto! La respuesta correcta es la ${String.fromCharCode(65 + q.answer)}.</p>
+                            <p class="text-red-600 mt-2"><span class="font-bold">Explicación:</span> ${q.explanation}</p>
+                        </div>
+                    `;
+                } else if (answered && answered.correct) {
+                    correctionHtml += `
+                        <div class="mt-4 p-4 bg-green-100 border-l-4 border-success rounded-lg shadow-inner">
+                            <p class="font-bold text-green-700">¡Correcto!</p>
+                        </div>
+                    `;
+                }
+
+                let navButtonHtml = '';
+                if (answered) {
+                    navButtonHtml = `
+                        <button onclick="App.nextQuestion()" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                            ${this.currentQuestionIndex < totalQ - 1 ? 'Siguiente Pregunta' : 'Ver Resultados'}
+                        </button>
+                    `;
+                } else if (this.mode === 'practicar' && this.currentQuestionIndex === totalQ - 1) {
+                    navButtonHtml = `
+                        <button onclick="App.finishQuiz()" 
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                            Enviar y Ver Resultados
+                        </button>
+                    `;
+                }
+
+
+                this.quizContainer.innerHTML = `
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                             <span class="text-sm font-semibold text-white bg-blue-500 py-1 px-3 rounded-full uppercase">
+                                Modo ${this.mode === 'estudiar' ? 'Estudiar' : 'Practicar'}
+                            </span>
+                            <span class="text-xl font-bold text-gray-700">
+                                Pregunta ${qNumber} de ${totalQ}
+                            </span>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-blue-500 h-2.5 rounded-full" style="width: ${qNumber / totalQ * 100}%"></div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl sm:text-2xl font-semibold mb-6 text-gray-800">${q.q}</h3>
+                    
+                    <div class="options-list space-y-3">
+                        ${optionsHtml}
+                    </div>
+                    
+                    ${this.mode === 'estudiar' ? correctionHtml : ''}
+
+                    <div class="mt-8 flex justify-center">
+                        ${this.mode === 'practicar' && !answered ? `<button onclick="App.saveAnswer(-1); App.nextQuestion()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300 mr-4">Omitir</button>` : ''}
+                        ${this.mode === 'estudiar' ? navButtonHtml : ''}
+                    </div>
+                `;
+
+                // Render correction in Practicar mode only on final screen
+                if (this.mode === 'practicar' && this.isQuizFinished) {
+                    this.renderResults();
+                }
+            },
+
+            /**
+             * Maneja la respuesta del usuario.
+             * @param {number} selectedIndex - Índice de la opción seleccionada.
+             */
+            handleAnswer(selectedIndex) {
+                this.saveAnswer(selectedIndex);
+
+                if (this.mode === 'estudiar') {
+                    // En modo estudiar, renderiza la misma pregunta con la corrección visible.
+                    this.renderQuestion();
+                } else {
+                    // En modo practicar, avanza a la siguiente pregunta.
+                    this.nextQuestion();
+                }
+            },
+
+            /**
+             * Guarda la respuesta en el historial.
+             * @param {number} selectedIndex - Índice de la opción seleccionada (-1 si se omite).
+             */
+            saveAnswer(selectedIndex) {
+                const q = this.quiz[this.currentQuestionIndex];
+                const isCorrect = selectedIndex === q.answer;
+
+                // Busca si ya existe una respuesta (solo debería pasar en modo Estudiar)
+                const existingIndex = this.userAnswers.findIndex(a => a.qId === q.id);
+
+                const newAnswer = {
+                    qId: q.id,
+                    answerIndex: selectedIndex,
+                    correct: isCorrect
+                };
+
+                if (existingIndex > -1) {
+                    this.userAnswers[existingIndex] = newAnswer;
+                } else {
+                    this.userAnswers.push(newAnswer);
+                }
+            },
+
+            /**
+             * Avanza a la siguiente pregunta o finaliza el quiz.
+             */
+            nextQuestion() {
+                if (this.currentQuestionIndex < this.quiz.length - 1) {
+                    this.currentQuestionIndex++;
+                    this.renderQuestion();
+                } else {
+                    this.isQuizFinished = true;
+                    this.renderResults();
+                }
+            },
+
+            /**
+             * Finaliza el quiz, usado explícitamente en modo Practicar.
+             */
+            finishQuiz() {
+                 // Asegurar que todas las preguntas no respondidas se marquen como incorrectas/omitidas (-1)
+                 this.quiz.forEach((q) => {
+                    const hasAnswered = this.userAnswers.some(a => a.qId === q.id);
+                    if (!hasAnswered) {
+                         this.userAnswers.push({
+                            qId: q.id,
+                            answerIndex: -1, // Omitida o no respondida
+                            correct: false
+                        });
+                    }
+                });
+
+                this.isQuizFinished = true;
+                this.renderResults();
+            },
+
+            /**
+             * Calcula la puntuación final.
+             * @returns {object} {score: number, correct: number, incorrect: number, omitted: number}
+             */
+            calculateScore() {
+                const results = {
+                    correct: 0,
+                    incorrect: 0,
+                    omitted: 0
+                };
+
+                this.userAnswers.forEach(answer => {
+                    if (answer.correct) {
+                        results.correct++;
+                    } else if (answer.answerIndex === -1) {
+                        results.omitted++;
+                    } else {
+                        results.incorrect++;
+                    }
+                });
+
+                const totalQuestions = this.quiz.length; // 20
+                const valueCorrect = 10 / totalQuestions; // Valor de un acierto
+                const penaltyIncorrect = valueCorrect / 3; // Resta por un fallo (1/3 del valor de acierto)
+
+                // La omisión (-1) cuenta como incorrecta/no puntuable para el cálculo
+                const totalIncorrect = results.incorrect + results.omitted;
+
+                let score = (results.correct * valueCorrect) - (totalIncorrect * penaltyIncorrect);
+
+                // Asegurar que la nota esté entre 0 y 10, redondeada a dos decimales
+                score = Math.max(0, score);
+                score = Math.min(10, score);
+                score = parseFloat(score.toFixed(2));
+
+                results.score = score;
+                return results;
+            },
+
+            /**
+             * Muestra la pantalla de resultados finales.
+             */
+            renderResults() {
+                const results = this.calculateScore();
+
+                let correctionSummaryHtml = '';
+
+                if (this.mode === 'practicar' || this.mode === 'estudiar') {
+                    // Mostrar resumen de corrección para ambos modos
+                    this.quiz.forEach((q, index) => {
+                        const answered = this.userAnswers.find(a => a.qId === q.id);
+                        const isCorrect = answered ? answered.correct : false;
+                        const isOmitted = answered && answered.answerIndex === -1;
+                        const statusClass = isCorrect ? 'text-green-600' : 'text-red-600';
+                        const statusText = isCorrect ? 'Correcta' : (isOmitted ? 'Omitida' : 'Fallada');
+
+                        let explanationHtml = '';
+                        if (!isCorrect) {
+                            explanationHtml = `
+                                <div class="mt-2 p-3 bg-red-50 border border-red-200 rounded-md text-sm">
+                                    <p class="font-semibold text-red-700">Respuesta Correcta: <span class="font-bold">${String.fromCharCode(65 + q.answer)}</span>. ${q.options[q.answer]}</p>
+                                    <p class="mt-1 text-red-600"><span class="font-bold">Explicación:</span> ${q.explanation}</p>
+                                </div>
+                            `;
+                        }
+
+                        correctionSummaryHtml += `
+                            <div class="p-4 border-b border-gray-200 hover:bg-gray-50 transition duration-150">
+                                <p class="text-lg font-medium text-gray-800">
+                                    <span class="font-bold text-gray-500">${index + 1}.</span> ${q.q}
+                                </p>
+                                <p class="${statusClass} font-semibold mt-1">Estado: ${statusText}</p>
+                                ${explanationHtml}
+                            </div>
+                        `;
+                    });
+                }
+
+                this.quizContainer.innerHTML = `
+                    <div class="text-center p-4 sm:p-10">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6">Resultados Finales</h2>
+                        
+                        <div class="inline-block p-6 rounded-xl shadow-xl mb-8 ${results.score >= 5 ? 'bg-green-500' : 'bg-red-500'} text-white">
+                            <p class="text-sm uppercase font-semibold">Nota Final</p>
+                            <p class="text-6xl font-extrabold">${results.score}</p>
+                            <p class="text-xl font-semibold">sobre 10</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 mb-10 text-center">
+                            <div class="p-3 bg-green-100 rounded-lg">
+                                <p class="text-2xl font-bold text-green-700">${results.correct}</p>
+                                <p class="text-sm text-green-600">Aciertos</p>
+                            </div>
+                            <div class="p-3 bg-red-100 rounded-lg">
+                                <p class="text-2xl font-bold text-red-700">${results.incorrect}</p>
+                                <p class="text-sm text-red-600">Errores</p>
+                            </div>
+                            <div class="p-3 bg-yellow-100 rounded-lg">
+                                <p class="text-2xl font-bold text-yellow-700">${results.omitted}</p>
+                                <p class="text-sm text-yellow-600">Omitidas</p>
+                            </div>
+                        </div>
+
+                        <button onclick="App.mode = null; App.render()" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition duration-300 transform hover:scale-105">
+                            Volver a Empezar
+                        </button>
+                    </div>
+
+                    <div class="mt-10 pt-6 border-t border-gray-200">
+                        <h3 class="text-2xl font-semibold mb-4 text-gray-800">Corrección Detallada</h3>
+                        ${correctionSummaryHtml}
+                    </div>
+                `;
+            }
+        };
+
+        // Inicia la aplicación al cargar la página
+        window.onload = () => App.render();
+    </script>
+</body>
+</html>
